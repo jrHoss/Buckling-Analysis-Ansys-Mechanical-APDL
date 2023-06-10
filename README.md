@@ -1,1 +1,2 @@
-# Buckling-Analysis-Ansys-Mechanical-APDL
+- Linear (eigenvalue) and Non-linear  Buckling analysis of thin column on ANSYS mechanical using APDL scripts.
+- A semester project for the Structural analysis using ANSYS course at the Unversity of Duisburg-Essen.
