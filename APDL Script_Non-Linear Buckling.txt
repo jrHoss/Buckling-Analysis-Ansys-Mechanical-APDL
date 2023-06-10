@@ -1,0 +1,55 @@
+FINISH 						! Clearing the current data	
+/CLEAR
+/TITLE,Non-Linear Buckling Analysis
+/PREP7
+ET,1,beam188,1,,2				! Beam188 as element type for the quadrilateral
+SECTYPE,1,BEAM,RECT				! rectangular cross section
+SECDATA,100,120					! breadth and width of the cross section
+MP,EX,1,2.1e5					! Young's modulus
+MP,PRXY,1,0.3					! Poisson's ratio
+MP,DENS,1,7.9e-9				! Density
+K,1,0,0						! Coordinate for bottom of the beam
+K,2,0,1200					! Coordinate for top of the beam
+L,1,2						! Create a line between keypoint 1 and 2
+LESIZE,ALL,,,15					! Line is divided into 15 elements
+LMESH,all					! Mesh Line
+FINISH
+
+/PREP7
+UPGEOM,1,1,1,'Z:\Ansys\Trial\file',rst		! Using the Solution of previous Eigen Value Buckling 
+						! Analysis
+/SOLU						! Enter the solution mode
+ANTYPE,STATIC 					! Static analysis
+NLGEOM,ON 					! Non-linear geometry solution
+OUTRES,ALL,ALL 					! To Store bunches of output 
+NSUBST,100,200,80 				! Load broken into small loadsteps
+NEQIT,1000 					! Define the maximum iterations to find solution
+AUTOTS,ON 					! Auto time stepping
+LNSRCH,ON
+/ESHAPE,1 					! Plots the beam as a volume rather than line
+Dk,1,ALL,0 					! Constrain bottom
+Fk,2,FY,-3600000 				! Apply load slightly more than the predicted
+ 						! required buckling load to upper node
+!Fk,2,FX, 4000 					! Add a horizontal load (0.1% of FY) to initiate
+ 						! buckling
+SOLVE
+FINISH
+/POST26 					! Time history post processor
+RFORCE,2,1,F,Y 					! Reads force data in variable 2
+NSOL,3,2,U,X 					! Reads y-deflection data into var 3
+XVAR,3 						! Make variable 2 the x-axis
+PLVAR,2 					! Plots variable 3 on y-axis
+/AXLAB,Y, Load (N)				! Changes y label
+/AXLAB,X, UX (mm)				! Changes X label
+/REPLOT 
+
+/POST1						! Select the post processor
+SET,,,,,1					! Define the dataset to be read
+NSEL,s,node,,2					! Select the subset of node for the dataset
+PRNSOL,u,x					! Print the nodal solution result
+
+PLDISP,1					! Shows the deformed geometry
+ANMODE,10,0.5,,0				! Produce the Animated sequence
+*use,modeshap.mac,1,2,3,4,1			
+SET,FIRST					! Read the first dataset
+SET,NEXT					! Read the last dataset

@@ -1,0 +1,44 @@
+FINISH 					! Clearing the current data
+/CLEAR
+/TITLE,Eigenvalue Buckling Analysis
+/PREP7
+ET,1,beam188,1,,2			! Beam188 as element type for the quadrilateral
+SECTYPE,1,BEAM,RECT			! defining the section data(rectangular)
+SECDATA,100,120				! giving the dimension of section
+MP,EX,1,2.1e5				! Young's modulus
+MP,PRXY,1,0.3				! Poisson's ratio
+MP,DENS,1,7.9e-9			! Density
+K,1,0,0					! Coordinate for bottom of the beam
+K,2,0,1200				! Coordinate for top of the beam
+L,1,2					! Create a line between keypoint 1 and 2
+LESIZE,ALL,,,15				! Line is divided into 15 elements
+LMESH,all				! Mesh Line
+FINISH
+/SOLU 					! Enter the solution mode 
+ANTYPE,STATIC 				! Before doing the Buckling Analysis, ANSYS
+					! needs the data from Static Analysis
+PSTRES,ON 				! Prestress can be accounted for - required
+					! during buckling analysis
+Dk,1,all				! Fix the bottom of the beam
+Fk,2,FY,-1				! Load the top vertically with a unit load.
+					! This is done so the calculated Eigenvalue
+					! will be the actual buckling load, since
+					! all loads are scaled during the analysis.
+SOLVE
+FINISH
+/SOLU 					! Enter the solution mode again to solve buckling
+ANTYPE,BUCKLE 				! Buckling analysis
+BUCOPT,SUBSP,1				! Buckling options - subspace, one mode
+SOLVE
+FINISH
+/SOLU 					! Re-enter solution mode to expand info - necessary
+EXPASS,ON 				! An expantion pass will be performed
+MXPAND,all 				! Specifies the number of modes to expand
+SOLVE
+FINISH
+/POST1 					! Enter post-processor
+SET,LIST				! List eigenvalue solution - Time/Freq listing is the
+					! force required for buckling (in N for this case).
+SET,LAST 				! Read in data for the desired mode
+PLDISP					! Plots the deflected shape 
+PLNSOL,u,y,2
